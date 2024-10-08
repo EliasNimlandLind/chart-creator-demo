@@ -1,4 +1,5 @@
 import ChartGenerator from './chartGenerator.js';
+import { Keyframe } from './../node_modules/lightningcss/node/ast.d';
 const costDatasets = [
   {
     type: 'Mjöl',
@@ -58,10 +59,10 @@ const costDatasets = [
 
 const revenueDatasets = [
   {
-    type: 'Vinst',
+    type: 'Intäkter',
     profits: [
-      26, 55, 71, 22, 33, 42, 36, 23, 23, 33, 12, 15, 13, 6, 70, 44, 53, 53, 21,
-      61, 15, 16, 33, 11, 55, 32, 11, 66, 13, 23,
+      152, 181, 112, 116, 110, 110, 211, 111, 110, 87, 81, 80, 80, 110, 111,
+      219, 196, 171, 110, 111, 111, 214, 111, 111, 110, 85, 82, 111, 88, 215,
     ],
   },
 ];
@@ -73,21 +74,19 @@ const chartGenerator = new ChartGenerator(
   revenueDatasets
 );
 
-function sumDatasetValues(datasets, key) {
-  // Ensure datasets is not empty and that the specified key exists in the first object
-  if (datasets.length > 0 && datasets[0][key]) {
-    const values = datasets[0][key]; // Access the array by the specified key
-
-    // Use reduce to sum only integer values
-    const total = values
-      .filter(Number.isInteger) // Filter out non-integer values
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-
+function sumDatasetValues(dataset, key) {
+  const reducedDatasets = dataset.reduce((total, currentDataset) => {
+    if (currentDataset[key]) {
+      return (
+        total +
+        currentDataset[key].reduce((accoumulated, value) => {
+          return accoumulated + value;
+        }, 0)
+      );
+    }
     return total;
-  } else {
-    console.error(`No ${key} data available in datasets`);
-    return 0; // Return 0 if the array under the specified key is undefined
-  }
+  }, 0);
+  return reducedDatasets;
 }
 
 const profitMargin = document.createElement('p');
