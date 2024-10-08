@@ -57,7 +57,7 @@ export class ChartGenerator {
               pinch: {
                 enabled: true,
               },
-              mode: 'x',
+              mode: 'y',
             },
             pan: {
               enabled: true,
