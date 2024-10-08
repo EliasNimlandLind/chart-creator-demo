@@ -160,9 +160,9 @@ export class ChartGenerator {
     );
   }
 
-  randomColorValue() {
-    return Math.floor(Math.random() * 256);
-  }
+  randomColorValue = (min = 120, max = 210) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
 
   getRandomColors(numberOfColors, alpha = 1) {
     let colors = [];
