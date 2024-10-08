@@ -3,7 +3,7 @@
   --line-chart-size-y: 500px;
 }
 
-#bread-chart {
+#line-chart {
   width: var(--line-chart-size-x);
   height: var(--line-chart-size-y);
   max-width: var(--line-chart-size-x);

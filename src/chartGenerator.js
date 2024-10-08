@@ -1,128 +1,51 @@
 import { Chart } from 'chart.js/auto';
 import zoomPlugin from 'chartjs-plugin-zoom';
-
 import './pieChart.css';
-import './breadChart.css';
+import './lineChart.css';
 
 Chart.register(zoomPlugin);
 
 export class ChartGenerator {
-  constructor(
-    canvasId,
-    chartType,
-    costDatasets = [],
-    revenueDatasets = [],
-    xAxisLabel = 'Dag',
-    yAxisLabel = 'Pris (kr)'
-  ) {
-    this.canvasId = canvasId;
+  constructor(context, chartType, datasets, dataUnit, xAxisUnit = 'dag') {
+    this.context = context;
     this.chartType = chartType;
-
-    this.costDatasets = costDatasets;
-    this.revenueDatasets = revenueDatasets;
-    this.combinedPricesData = this.getCombinedPricesData();
-    this.colorScheme = this.getColorScheme(
-      costDatasets.length + revenueDatasets.length
-    );
-
-    this.xAxisLabel = xAxisLabel;
-    this.yAxisLabel = yAxisLabel;
-    this.chartInstance = null;
+    this.datasets = datasets;
+    this.chart = null;
+    this.dataUnit = dataUnit;
+    this.xAxisUnit = xAxisUnit;
     this.pieChartInstance = null;
+    this.randomColors = this.getRandomColors(datasets[0].data.length);
   }
-
-  getCombinedPricesData() {
-    const numberOfDays =
-      this.costDatasets.length > 0
-        ? this.costDatasets[0].prices.length
-        : this.revenueDatasets.length > 0
-        ? this.revenueDatasets[0].profits.length
-        : 0; // Default to 0 if no datasets
-
-    const days = [...Array(numberOfDays)].map(
-      (_, dayIndex) => `${dayIndex + 1}`
-    );
-
-    const combinedData = {
-      days,
-      prices: {},
-    };
-
-    this.costDatasets.forEach((dataset) => {
-      combinedData.prices[dataset.type] = dataset.prices;
-    });
-
-    this.revenueDatasets.forEach((dataset) => {
-      combinedData.prices[dataset.type] = dataset.profits;
-    });
-
-    return combinedData;
-  }
-
-  randomColorValue = () => {
-    return Math.floor(Math.random() * 256);
-  };
-
-  getColorScheme(amountOfColors) {
-    const colors = [];
-
-    for (let colorIndex = 0; colorIndex < amountOfColors; colorIndex++) {
-      const red = this.randomColorValue();
-      const green = this.randomColorValue();
-      const blue = this.randomColorValue();
-      const alpha = 1;
-      const color = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
-      colors.push(color);
-    }
-    return colors;
-  }
-
-  processDataSets(data, colors) {
-    return Object.keys(data).map((key, index) => ({
-      label: key,
-      data: data[key],
-      borderColor: colors[index % colors.length],
-      borderWidth: 1,
-      fill: false,
-      pointRadius: 1,
-      pointBackgroundColor: colors[index % colors.length],
-    }));
-  }
-
-  getCanvas = (canvasId) => {
-    const canvas =
-      document.getElementById(canvasId) || document.createElement('canvas');
-    return canvas;
-  };
 
   generateChart() {
-    const lineChartCanvas = this.getCanvas(this.canvasId)?.getContext('2d');
+    const chartData = {
+      labels: this.datasets[1].data.map((_, index) => index + 1),
+      datasets: this.datasets.map((dataset, index) => ({
+        label: dataset.label,
+        data: dataset.data,
+        borderColor: this.randomColors[index],
+        borderWidth: 0.5,
+        pointRadius: 1,
+        pointHoverRadius: 3,
+        lineTension: 0.0001,
+        backgroundColor: this.randomColors[index],
+        fill: false,
+      })),
+    };
 
-    const processedDatasets = this.processDataSets(
-      this.combinedPricesData.prices,
-      this.colorScheme
-    );
-    const labels = this.combinedPricesData.days;
-
-    this.chartInstance = new Chart(lineChartCanvas, {
+    this.chartInstance = new Chart(this.context, {
       type: this.chartType,
-      data: {
-        labels,
-        datasets: processedDatasets,
-      },
+      data: chartData,
       options: {
         responsive: true,
         plugins: {
           tooltip: {
             callbacks: {
-              title: (tooltipItems) => {
-                const index = tooltipItems[0].dataIndex;
-                return `${this.xAxisLabel} ${labels[index]}`;
-              },
+              title: () => '',
               label: (tooltipItem) => {
-                const price = tooltipItem.raw;
-                const datasetLabel = tooltipItem.dataset.label;
-                return `${datasetLabel}: ${price} kr`;
+                const datasetLabel = tooltipItem.dataset.label || '';
+                const dataInDataPoint = tooltipItem.raw;
+                return `${datasetLabel}: ${dataInDataPoint} ${this.dataUnit}`;
               },
             },
           },
@@ -147,21 +70,23 @@ export class ChartGenerator {
             beginAtZero: true,
             title: {
               display: true,
-              text: this.xAxisLabel,
+              text: this.xAxisUnit,
+            },
+            ticks: {
+              maxTicksLimit: 10,
             },
           },
           y: {
             beginAtZero: true,
             title: {
               display: true,
-              text: this.yAxisLabel,
+              text: this.dataUnit,
             },
           },
         },
       },
     });
-
-    lineChartCanvas.canvas.addEventListener('click', (event) => {
+    this.context.canvas.addEventListener('click', (event) => {
       const activePoints = this.chartInstance.getElementsAtEventForMode(
         event,
         'nearest',
@@ -170,73 +95,52 @@ export class ChartGenerator {
       );
 
       if (activePoints.length) {
+        const pieChartId = 'pie-chart';
+        const pieChartCanvas = document.createElement('canvas');
+        pieChartCanvas.id = pieChartId;
+        document.body.appendChild(pieChartCanvas);
+
         const clickedIndex = activePoints[0].index;
         this.updatePieChart(clickedIndex);
-
-        const pieChartCanvas = document.getElementById('pie-chart');
-        if (pieChartCanvas && pieChartCanvas.style.display === 'none') {
-          pieChartCanvas.style.display = 'block';
-        }
       }
     });
   }
 
   updatePieChart(dayIndex) {
-    const pieChartId = 'pie-chart';
-    const pieChartCanvas = this.getCanvas(pieChartId);
+    const color = this.randomColors;
+    const data = this.datasets.map((dataset) => dataset.data[dayIndex]);
 
-    if (!document.getElementById(pieChartId)) {
-      pieChartCanvas.id = pieChartId;
-      pieChartCanvas.style.display = 'block';
-      document.body.appendChild(pieChartCanvas);
-    }
+    const pieChartData = {
+      labels: this.datasets.map((dataset) => dataset.label),
+      datasets: [
+        {
+          data: data,
+          backgroundColor: color,
+          borderWidth: 0,
+        },
+      ],
+    };
+
+    const pieChartId = 'pie-chart';
+    let pieChartCanvas = document.getElementById(pieChartId);
 
     const pieChartContext = pieChartCanvas.getContext('2d');
-
-    const labels = [
-      ...this.costDatasets.map((dataset) => dataset.type),
-      ...this.revenueDatasets.map((dataset) => dataset.type),
-    ];
-    const data = [
-      ...this.costDatasets.map((dataset) => dataset.prices[dayIndex]),
-      ...this.revenueDatasets.map((dataset) => dataset.profits[dayIndex]),
-    ];
-
-    if (this.pieChartInstance) {
-      this.pieChartInstance.data.labels = labels;
-      this.pieChartInstance.data.datasets[0].data = data;
-      this.pieChartInstance.options.plugins.title.text = `${
-        this.yAxisLabel
-      } för dag ${dayIndex + 1}`;
-
-      this.pieChartInstance.update();
-      return;
-    }
-
     this.pieChartInstance = new Chart(pieChartContext, {
       type: 'pie',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: `${this.yAxisLabel}`,
-            data,
-            backgroundColor: this.colorScheme,
-          },
-        ],
-      },
+      data: pieChartData,
       options: {
         responsive: true,
         plugins: {
           title: {
             display: true,
+            text: `${this.dataUnit} för dag ${dayIndex + 1}`, // Set the title for new instance
           },
           tooltip: {
             callbacks: {
               label: (tooltipItem) => {
                 const datasetLabel = tooltipItem.label;
                 const price = tooltipItem.raw;
-                return `${datasetLabel}: ${price} kr`;
+                return `${datasetLabel}: ${price} ${this.dataUnit}`; // Use the correct unit
               },
             },
           },
@@ -244,10 +148,30 @@ export class ChartGenerator {
       },
     });
 
-    pieChartCanvas.addEventListener('contextmenu', function (event) {
-      event.preventDefault();
-      pieChartCanvas.style.display = 'none';
-    });
+    pieChartCanvas.addEventListener(
+      'contextmenu',
+      function (event) {
+        event.preventDefault();
+        pieChartCanvas.parentNode.removeChild(pieChartCanvas);
+        this.pieChartInstance.destroy();
+      }.bind(this)
+    );
+  }
+
+  randomColorValue() {
+    return Math.floor(Math.random() * 256);
+  }
+
+  getRandomColors(numberOfColors, alpha = 1) {
+    let colors = [];
+    for (let colorIndex = 0; colorIndex < numberOfColors; colorIndex++) {
+      const randomColor = `rgba(${this.randomColorValue()}, 
+    ${this.randomColorValue()}, 
+    ${this.randomColorValue()},
+    ${alpha})`;
+      colors.push(randomColor);
+    }
+    return colors;
   }
 }
 
