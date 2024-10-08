@@ -32,7 +32,16 @@ export class ChartGenerator {
   }
 
   getCombinedPricesData() {
-    const days = [...Array(30)].map((_, dayIndex) => `${dayIndex + 1}`);
+    const numberOfDays =
+      this.costDatasets.length > 0
+        ? this.costDatasets[0].prices.length
+        : this.revenueDatasets.length > 0
+        ? this.revenueDatasets[0].profits.length
+        : 0; // Default to 0 if no datasets
+
+    const days = [...Array(numberOfDays)].map(
+      (_, dayIndex) => `${dayIndex + 1}`
+    );
 
     const combinedData = {
       days,
@@ -44,7 +53,7 @@ export class ChartGenerator {
     });
 
     this.revenueDatasets.forEach((dataset) => {
-      combinedData.prices[dataset.type] = dataset.profits; // Assuming profits are structured similarly
+      combinedData.prices[dataset.type] = dataset.profits;
     });
 
     return combinedData;
@@ -75,7 +84,7 @@ export class ChartGenerator {
       borderColor: colors[index % colors.length],
       borderWidth: 1,
       fill: false,
-      pointRadius: 5,
+      pointRadius: 1,
       pointBackgroundColor: colors[index % colors.length],
     }));
   }
@@ -235,7 +244,8 @@ export class ChartGenerator {
       },
     });
 
-    pieChartCanvas.addEventListener('click', () => {
+    pieChartCanvas.addEventListener('contextmenu', function (event) {
+      event.preventDefault();
       pieChartCanvas.style.display = 'none';
     });
   }
