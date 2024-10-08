@@ -1,0 +1,11 @@
+:root {
+  --pie-chart-size: 500px;
+}
+
+#pie-chart {
+  width: var(--pie-chart-size);
+  height: var(--pie-chart-size);
+  max-width: var(--pie-chart-size);
+  max-height: var(--pie-chart-size);
+  display: block;
+}

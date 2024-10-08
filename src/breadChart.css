@@ -1,0 +1,12 @@
+:root {
+  --line-chart-size-x: 1500px;
+  --line-chart-size-y: 500px;
+}
+
+#bread-chart {
+  width: var(--line-chart-size-x);
+  height: var(--line-chart-size-y);
+  max-width: var(--line-chart-size-x);
+  max-height: var(--line-chart-size-y);
+  display: block;
+}
