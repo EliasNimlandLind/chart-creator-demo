@@ -1,5 +1,4 @@
 import ChartGenerator from './chartGenerator.js';
-import { Keyframe } from './../node_modules/lightningcss/node/ast.d';
 const costDatasets = [
   {
     type: 'Mjöl',
