@@ -134,15 +134,32 @@ const datasets = [
   },
 ];
 
+const sumArray = (array) => {
+  let sum = 0;
+  array.forEach((element) => {
+    sum += element;
+  });
+  return sum;
+};
+
 const ctx = document.getElementById('line-chart').getContext('2d');
 
 const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'kr');
-const revenueData = 
+
+const costData = datasets
+  .filter((dataset) => dataset.label !== 'Intäkter')
+  .map((datasets) => datasets.data);
+const combinedCosts = [].concat(...costData);
+
+const revenueData = datasets
+  .filter((dataset) => dataset.label === 'Intäkter')
+  .map((datasets) => datasets.data);
+const combinedRevenue = [].concat(...revenueData);
+
 const profitMargin = document.createElement('p');
 const profitMarginPercentage =
-  ((sumDatasetValues(revenueDatasets, 'profits') -
-    sumDatasetValues(costDatasets, 'prices')) /
-    sumDatasetValues(revenueDatasets, 'profits')) *
+  ((sumArray(combinedRevenue) - sumArray(combinedCosts)) /
+    sumArray(combinedRevenue)) *
   100;
 profitMargin.innerText = 'Vinstmarginal: ' + profitMarginPercentage + '%';
 

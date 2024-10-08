@@ -96,17 +96,22 @@ export class ChartGenerator {
 
       if (activePoints.length) {
         const pieChartId = 'pie-chart';
+        const existingCanvas = document.getElementById(pieChartId);
+        if (existingCanvas) {
+          existingCanvas.parentNode.removeChild(existingCanvas);
+        }
+
         const pieChartCanvas = document.createElement('canvas');
         pieChartCanvas.id = pieChartId;
         document.body.appendChild(pieChartCanvas);
 
         const clickedIndex = activePoints[0].index;
-        this.updatePieChart(clickedIndex);
+        this.updatePieChart(clickedIndex, pieChartCanvas);
       }
     });
   }
 
-  updatePieChart(dayIndex) {
+  updatePieChart(dayIndex, pieChartCanvas) {
     const color = this.randomColors;
     const data = this.datasets.map((dataset) => dataset.data[dayIndex]);
 
@@ -120,9 +125,6 @@ export class ChartGenerator {
         },
       ],
     };
-
-    const pieChartId = 'pie-chart';
-    let pieChartCanvas = document.getElementById(pieChartId);
 
     const pieChartContext = pieChartCanvas.getContext('2d');
     this.pieChartInstance = new Chart(pieChartContext, {
