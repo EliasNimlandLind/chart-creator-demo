@@ -21,7 +21,7 @@ export class ChartGenerator {
 		this.dataUnit = dataUnit;
 		this.xAxisUnit = xAxisUnit;
 		this.pieChartInstance = null;
-		this.randomColors = this.getRandomColors(datasets[0].data.length);
+		this.randomColors = this.#getRandomColors(datasets[0].data.length);
 	}
 
 	generateChart() {
@@ -98,7 +98,7 @@ export class ChartGenerator {
 				},
 			},
 		});
-		this.addChartClickListener();
+		this.#addChartClickListener();
 		this.addEventListener('beforeprint', () => {
 			this.chartInstance.resize();
 		});
@@ -107,7 +107,7 @@ export class ChartGenerator {
 		});
 	}
 
-	addChartClickListener() {
+	#addChartClickListener() {
 		if (this.canvas) {
 			this.canvas.addEventListener('click', (event) => {
 				const activePoints = this.chartInstance.getElementsAtEventForMode(
@@ -129,7 +129,7 @@ export class ChartGenerator {
 					document.body.appendChild(pieChartCanvas);
 
 					const clickedIndex = activePoints[0].index;
-					this.updatePieChart(clickedIndex, pieChartCanvas);
+					this.#updatePieChart(clickedIndex, pieChartCanvas);
 				}
 			});
 		} else {
@@ -137,7 +137,7 @@ export class ChartGenerator {
 		}
 	}
 
-	updatePieChart(dayIndex, pieChartCanvas) {
+	#updatePieChart(dayIndex, pieChartCanvas) {
 		const color = this.randomColors;
 		const data = this.datasets.map((dataset) => dataset.data[dayIndex]);
 
@@ -190,7 +190,7 @@ export class ChartGenerator {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	};
 
-	getRandomColors(numberOfColors, alpha = 1) {
+	#getRandomColors(numberOfColors, alpha = 1) {
 		let colors = [];
 		for (let colorIndex = 0; colorIndex < numberOfColors; colorIndex++) {
 			const randomColor = `rgba(${this.randomColorValue()}, 

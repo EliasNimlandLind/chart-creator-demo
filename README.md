@@ -3,8 +3,9 @@
 ## Features:
 
 - Responsive
-- Customizable
 - Made for the web
+- Zoom and pan functionality
+- Customizable
 
 ## About this project
 
@@ -17,3 +18,26 @@ The project is used to visualize data using charts and graphs by instaniating ´
 - Javascript
 - CSS
 - HTML
+
+## Usage guide
+
+Below is a basic sample to illustrate usage.
+
+```javascript
+const datasets = [
+	{
+		label: 'Dataset A',
+		data: [152, 181, 112],
+	},
+];
+
+const chartContext = document.getElementById('line-chart');
+const chartGenerator = new ChartGenerator(
+	chartContext,
+	'line',
+	'pie',
+	datasets,
+	'kr'
+);
+chartGenerator.generateChart();
+```

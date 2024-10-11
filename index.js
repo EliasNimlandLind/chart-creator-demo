@@ -36,8 +36,14 @@ const datasets = [
 	},
 ];
 
-const ctx = document.getElementById('line-chart');
+const chartContext = document.getElementById('line-chart');
 
-const chartGenerator = new ChartGenerator(ctx, 'line', 'pie', datasets, 'kr');
+const chartGenerator = new ChartGenerator(
+	chartContext,
+	'line',
+	'pie',
+	datasets,
+	'kr'
+);
 
 chartGenerator.generateChart();
