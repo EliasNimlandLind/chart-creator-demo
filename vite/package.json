@@ -1,0 +1,16 @@
+{
+	"name": "chartjs-example",
+	"version": "1.0.0",
+	"license": "MIT",
+	"scripts": {
+		"dev": "vite",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"vite": "^5.4.8"
+	},
+	"dependencies": {
+		"chart.js": "^4.0.0",
+		"chartjs-plugin-zoom": "^2.0.1"
+	}
+}

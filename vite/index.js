@@ -1,4 +1,4 @@
-import ChartGenerator from './chartGenerator.js';
+import ChartGenerator from './src/js/chartGenerator';
 
 const datasets = [
 	{

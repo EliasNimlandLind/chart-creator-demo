@@ -1,7 +1,6 @@
 import { Chart } from 'chart.js/auto';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import './pieChart.css';
-import './lineChart.css';
+import '../css/pieChart.css';
 
 Chart.register(zoomPlugin);
 
@@ -92,6 +91,12 @@ export class ChartGenerator {
 			},
 		});
 		this.addChartClickListener();
+		this.addEventListener('beforeprint', () => {
+			this.chartInstance.resize();
+		});
+		this.addEventListener('afterprint', () => {
+			this.chartInstance.resize();
+		});
 	}
 
 	addChartClickListener() {
