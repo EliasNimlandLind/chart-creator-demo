@@ -6,11 +6,18 @@ import '../css/linechartContainer.css';
 Chart.register(zoomPlugin);
 
 export class ChartGenerator {
-	constructor(context, chartType, datasets, dataUnit, xAxisUnit = 'dag') {
+	constructor(
+		context,
+		mainChartType,
+		zoomInChartType,
+		datasets,
+		dataUnit,
+		xAxisUnit = 'dag'
+	) {
 		this.canvas = context;
-		this.chartType = chartType;
+		this.mainChartType = mainChartType;
+		this.zoomInChartType = zoomInChartType;
 		this.datasets = datasets;
-		this.chart = null;
 		this.dataUnit = dataUnit;
 		this.xAxisUnit = xAxisUnit;
 		this.pieChartInstance = null;
@@ -34,7 +41,7 @@ export class ChartGenerator {
 		};
 
 		this.chartInstance = new Chart(this.canvas.getContext('2d'), {
-			type: this.chartType,
+			type: this.mainChartType,
 			data: chartData,
 			options: {
 				responsive: true,
@@ -57,11 +64,11 @@ export class ChartGenerator {
 							pinch: {
 								enabled: true,
 							},
-							mode: 'y',
+							mode: 'xy',
 						},
 						pan: {
 							enabled: true,
-							mode: 'x',
+							mode: 'xy',
 						},
 					},
 				},
