@@ -6,7 +6,15 @@
 	"description": "A package used to create interactive charts and graphs.",
 	"main": "src/index.js",
 	"dependencies": {
-		"chart.js": "^4.0.0",
+		"chart.js": "^4.4.4",
 		"chartjs-plugin-zoom": "^2.0.1"
+	},
+	"devDependencies": {
+		"vite": "^5.4.8"
+	},
+	"scripts": {
+		"build": "vite build",
+		"dev": "vite",
+		"preview": "vite preview"
 	}
 }
