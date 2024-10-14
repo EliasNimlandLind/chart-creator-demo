@@ -135,7 +135,7 @@ export class ChartGenerator {
           zoomChartCanvas.className = "zoom-chart";
 
           const closeButton = document.createElement("button");
-          closeButton.innerText = "Close Zoom Chart";
+          closeButton.innerText = "Close zoom chart";
 
           const individualZoomChartContainer = document.createElement("div");
           individualZoomChartContainer.id = zoomChartId + "-div";
@@ -147,8 +147,9 @@ export class ChartGenerator {
           this.#updateZoomChart(clickedIndex, zoomChartCanvas);
 
           closeButton.addEventListener("click", () => {
-            zoomChartCanvas.parentNode.removeChild(zoomChartCanvas);
-            closeButton.parentNode.removeChild(closeButton);
+            individualZoomChartContainer.parentNode.removeChild(
+              individualZoomChartContainer
+            );
           });
         }
       });
