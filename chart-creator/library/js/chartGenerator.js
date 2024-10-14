@@ -1,6 +1,6 @@
 import { Chart } from "chart.js/auto";
 import zoomPlugin, { zoom } from "chartjs-plugin-zoom";
-
+import { getDataFromDatasetByIndex } from "./utilties/datasetUtilties";
 Chart.register(zoomPlugin);
 
 export class ChartGenerator {
@@ -12,8 +12,8 @@ export class ChartGenerator {
     dataUnit,
     xAxisUnit,
     xAxisType = "linear",
-
-    yAxisType = "linear"
+    yAxisType = "linear",
+    stepSize = 20
   ) {
     this.canvas = context;
     this.mainChartType = mainChartType;
@@ -21,15 +21,19 @@ export class ChartGenerator {
     this.datasets = datasets;
     this.dataUnit = dataUnit;
     this.xAxisUnit = xAxisUnit;
-    this.zoomChartInstance = null;
-    this.randomColors = this.#getRandomColors(datasets[0].data.length);
+    this.randomColors = this.#getRandomColors(
+      getDataFromDatasetByIndex(0, this.datasets).length
+    );
     this.xAxisType = xAxisType;
     this.yAxisType = yAxisType;
+    this.stepSize = stepSize;
   }
 
   generateChart() {
     const chartData = {
-      labels: this.datasets[0].data.map((_, index) => index + 1),
+      labels: getDataFromDatasetByIndex(0, this.datasets).map(
+        (_, index) => index + 1
+      ),
       datasets: this.datasets.map((dataset, index) => ({
         label: dataset.label,
         data: dataset.data,
@@ -41,30 +45,6 @@ export class ChartGenerator {
         fill: false,
       })),
     };
-
-    const largestArray = this.datasets.reduce(
-      (largest, current) =>
-        current.length > largest.length ? current : largest,
-      []
-    );
-
-    let largestIndexInDatasets = null;
-
-    for (
-      let datasetIndex = 0;
-      datasetIndex < this.datasets.length;
-      datasetIndex++
-    ) {
-      const currentArray = this.datasets[datasetIndex];
-
-      if (Array.isArray(currentArray) && currentArray.length > 0) {
-        const currentLargestIntegerInDataset = Math.max(...currentArray);
-        largestIndexInDatasets =
-          largestIndexInDatasets === null
-            ? currentLargestIntegerInDataset
-            : Math.max(largestIndexInDatasets, currentLargestIntegerInDataset);
-      }
-    }
 
     this.chartInstance = new Chart(this.canvas.getContext("2d"), {
       type: this.mainChartType,
@@ -84,10 +64,14 @@ export class ChartGenerator {
           },
           zoom: {
             limits: {
-              x: { min: 0, max: largestArray.length, minRange: 50 },
+              x: {
+                min: 0,
+                max: getDataFromDatasetByIndex(0, this.datasets).length,
+                minRange: 50,
+              },
               y: {
                 min: 0,
-                max: largestIndexInDatasets,
+                max: Math.max(getDataFromDatasetByIndex(0, this.datasets)),
                 minRange: 50,
               },
             },
@@ -118,6 +102,7 @@ export class ChartGenerator {
               autoSkip: true,
               minRotation: 25,
               maxRotation: 45,
+              stepSize: this.stepSize,
               callback: function (index) {
                 return this.getLabelForValue(index);
               },

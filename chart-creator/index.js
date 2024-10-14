@@ -63,8 +63,7 @@ const chartGenerator = new ChartGenerator(
   "line",
   "pie",
   datasets,
-  "kr",
-  "dag"
+  "kr"
 );
 
 chartGenerator.generateChart();
