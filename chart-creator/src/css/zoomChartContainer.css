@@ -1,0 +1,8 @@
+#zoom-chart-main-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	width: 90vw;
+	height: 70vh;
+}

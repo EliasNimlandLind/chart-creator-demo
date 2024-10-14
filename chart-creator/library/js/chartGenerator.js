@@ -7,19 +7,21 @@ export class ChartGenerator {
 	constructor(
 		context,
 		mainChartType,
-		zoomInChartType,
+		zoomChartType,
 		datasets,
 		dataUnit,
-		xAxisUnit = 'dag'
+		xAxisUnit = 'dag',
+		isYAxisLogarithmic = false
 	) {
 		this.canvas = context;
 		this.mainChartType = mainChartType;
-		this.zoomInChartType = zoomInChartType;
+		this.zoomChartType = zoomChartType;
 		this.datasets = datasets;
 		this.dataUnit = dataUnit;
 		this.xAxisUnit = xAxisUnit;
 		this.zoomChartInstance = null;
 		this.randomColors = this.#getRandomColors(datasets[0].data.length);
+		this.yAxisType = isYAxisLogarithmic ? 'logarithmic' : 'linear';
 	}
 
 	generateChart() {
@@ -54,6 +56,10 @@ export class ChartGenerator {
 							},
 						},
 					},
+					pan: {
+						enabled: true,
+						mode: 'xy',
+					},
 					zoom: {
 						zoom: {
 							wheel: {
@@ -62,10 +68,6 @@ export class ChartGenerator {
 							pinch: {
 								enabled: true,
 							},
-							mode: 'xy',
-						},
-						pan: {
-							enabled: true,
 							mode: 'xy',
 						},
 					},
@@ -92,20 +94,26 @@ export class ChartGenerator {
 							display: true,
 							text: this.dataUnit,
 						},
+						type: this.yAxisType,
 					},
 				},
 			},
 		});
-		this.#addChartClickListener();
-		this.addEventListener('beforeprint', () => {
+
+		const zoomChartMainContainer = document.createElement('div');
+		zoomChartMainContainer.id = 'zoom-chart-main-container';
+		document.body.appendChild(zoomChartMainContainer);
+
+		this.#addChartClickListener(zoomChartMainContainer);
+		window.addEventListener('beforeprint', () => {
 			this.chartInstance.resize();
 		});
-		this.addEventListener('afterprint', () => {
+		window.addEventListener('afterprint', () => {
 			this.chartInstance.resize();
 		});
 	}
 
-	#addChartClickListener() {
+	#addChartClickListener(zoomChartMainContainer) {
 		if (this.canvas) {
 			this.canvas.addEventListener('click', (event) => {
 				const activePoints = this.chartInstance.getElementsAtEventForMode(
@@ -116,7 +124,7 @@ export class ChartGenerator {
 				);
 
 				if (activePoints.length) {
-					const zoomChartId = 'zoom-chart';
+					const zoomChartId = `zoom-chart-${activePoints[0].index}`;
 					const existingCanvas = document.getElementById(zoomChartId);
 					if (existingCanvas) {
 						existingCanvas.parentNode.removeChild(existingCanvas);
@@ -124,10 +132,27 @@ export class ChartGenerator {
 
 					const zoomChartCanvas = document.createElement('canvas');
 					zoomChartCanvas.id = zoomChartId;
-					document.body.appendChild(zoomChartCanvas);
+					zoomChartCanvas.className = 'zoom-chart';
+
+					const closeButton = document.createElement('button');
+					closeButton.innerText = 'Close Zoom Chart';
+
+					const individualZoomChartContainer = document.createElement('div');
+					individualZoomChartContainer.id = zoomChartId + '-div';
+					individualZoomChartContainer.appendChild(zoomChartCanvas);
+					individualZoomChartContainer.appendChild(closeButton);
+					zoomChartMainContainer.appendChild(individualZoomChartContainer);
 
 					const clickedIndex = activePoints[0].index;
 					this.#updateZoomChart(clickedIndex, zoomChartCanvas);
+
+					closeButton.addEventListener('click', () => {
+						zoomChartCanvas.parentNode.removeChild(zoomChartCanvas);
+						closeButton.parentNode.removeChild(closeButton);
+						if (this.zoomChartInstance) {
+							this.zoomChartInstance.destroy();
+						}
+					});
 				}
 			});
 		} else {
@@ -135,9 +160,11 @@ export class ChartGenerator {
 		}
 	}
 
-	#updateZoomChart(dayIndex, zoomChartCanvas) {
+	#updateZoomChart(clickedDataPointIndex, zoomChartCanvas) {
 		const color = this.randomColors;
-		const data = this.datasets.map((dataset) => dataset.data[dayIndex]);
+		const data = this.datasets.map(
+			(dataset) => dataset.data[clickedDataPointIndex]
+		);
 
 		const zoomChartData = {
 			labels: this.datasets.map((dataset) => dataset.label),
@@ -152,49 +179,37 @@ export class ChartGenerator {
 
 		const zoomChartContext = zoomChartCanvas.getContext('2d');
 		this.zoomChartInstance = new Chart(zoomChartContext, {
-			type: 'pie',
+			type: this.zoomChartType,
 			data: zoomChartData,
 			options: {
 				responsive: true,
 				plugins: {
 					title: {
 						display: true,
-						text: `${this.dataUnit} för dag ${dayIndex + 1}`, // Set the title for new instance
+						text: `${this.dataUnit} för dag ${clickedDataPointIndex + 1}`,
 					},
 					tooltip: {
 						callbacks: {
 							label: (tooltipItem) => {
 								const datasetLabel = tooltipItem.label;
 								const price = tooltipItem.raw;
-								return `${datasetLabel}: ${price} ${this.dataUnit}`; // Use the correct unit
+								return `${datasetLabel}: ${price} ${this.dataUnit}`;
 							},
 						},
 					},
 				},
 			},
 		});
-
-		zoomChartCanvas.addEventListener(
-			'contextmenu',
-			function (event) {
-				event.preventDefault();
-				zoomChartCanvas.parentNode.removeChild(zoomChartCanvas);
-				this.zoomChartInstance.destroy();
-			}.bind(this)
-		);
 	}
 
-	randomColorValue = (min = 120, max = 210) => {
+	#randomColorValue = (min = 120, max = 210) => {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	};
 
 	#getRandomColors(numberOfColors, alpha = 1) {
 		let colors = [];
 		for (let colorIndex = 0; colorIndex < numberOfColors; colorIndex++) {
-			const randomColor = `rgba(${this.randomColorValue()}, 
-    ${this.randomColorValue()}, 
-    ${this.randomColorValue()},
-    ${alpha})`;
+			const randomColor = `rgba(${this.#randomColorValue()}, ${this.#randomColorValue()}, ${this.#randomColorValue()}, ${alpha})`;
 			colors.push(randomColor);
 		}
 		return colors;

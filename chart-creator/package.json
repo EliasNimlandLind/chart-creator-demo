@@ -5,8 +5,10 @@
 	"license": "MIT",
 	"description": "A package used to create interactive charts and graphs.",
 	"main": "src/index.js",
+	"type": "module",
 	"dependencies": {
 		"chart.js": "^4.4.4",
+		"chartjs": "^0.3.24",
 		"chartjs-plugin-zoom": "^2.0.1"
 	},
 	"devDependencies": {

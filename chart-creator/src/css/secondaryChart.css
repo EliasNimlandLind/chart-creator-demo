@@ -1,11 +1,10 @@
 :root {
-	--pie-chart-size: 500px;
+	--pie-chart-size: 200px;
 }
 
-#pie-chart {
+.zoom-chart {
 	width: var(--pie-chart-size);
 	height: var(--pie-chart-size);
 	max-width: var(--pie-chart-size);
 	max-height: var(--pie-chart-size);
-	display: block;
 }

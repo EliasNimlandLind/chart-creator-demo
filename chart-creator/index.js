@@ -1,4 +1,4 @@
-import ChartGenerator from './src/js/chartGenerator.js';
+import ChartGenerator from './library/js/chartGenerator';
 
 const datasets = [
 	{
@@ -41,7 +41,7 @@ const chartContext = document.getElementById('line-chart');
 const chartGenerator = new ChartGenerator(
 	chartContext,
 	'line',
-	'line',
+	'pie',
 	datasets,
 	'kr'
 );

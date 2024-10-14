@@ -44,3 +44,11 @@ const chartGenerator = new ChartGenerator(
 );
 chartGenerator.generateChart();
 ```
+
+## TODO
+
+- Migrate to Typescript
+- Seperate chartGenerator into smaller scripts
+- Fix zoom and pan functionality
+- Add support for flowcharts, perhaps using Mermaid
+- Add save functionality to pie chart in pie chart context menu

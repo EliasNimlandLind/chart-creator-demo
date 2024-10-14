@@ -1,5 +1,5 @@
 # compiled output
-/dist
+distribution/
 
 # IDE - VSCode
 .vscode/*
@@ -14,8 +14,7 @@ logs
 
 
 # Dependency directories
-node_modules/
-
+node_modules
 # Optional npm cache directory
 .npm
 
