@@ -49,5 +49,4 @@ chartGenerator.generateChart();
 
 - Migrate to Typescript
 - Seperate chartGenerator into smaller scripts
-- Fix zoom and pan functionality
 - Add support for flowcharts, perhaps using Mermaid
