@@ -1,5 +1,5 @@
 import { Chart } from "chart.js/auto";
-import zoomPlugin from "chartjs-plugin-zoom";
+import zoomPlugin, { zoom } from "chartjs-plugin-zoom";
 
 Chart.register(zoomPlugin);
 
@@ -10,8 +10,10 @@ export class ChartGenerator {
     zoomChartType,
     datasets,
     dataUnit,
-    xAxisUnit = "dag",
-    isYAxisLogarithmic = false
+    xAxisUnit,
+    xAxisType = "linear",
+
+    yAxisType = "linear"
   ) {
     this.canvas = context;
     this.mainChartType = mainChartType;
@@ -21,7 +23,8 @@ export class ChartGenerator {
     this.xAxisUnit = xAxisUnit;
     this.zoomChartInstance = null;
     this.randomColors = this.#getRandomColors(datasets[0].data.length);
-    this.yAxisType = isYAxisLogarithmic ? "logarithmic" : "linear";
+    this.xAxisType = xAxisType;
+    this.yAxisType = yAxisType;
   }
 
   generateChart() {
@@ -34,11 +37,34 @@ export class ChartGenerator {
         borderWidth: 0.5,
         pointRadius: 2,
         pointHoverRadius: 3,
-        lineTension: 0.0001,
         backgroundColor: this.randomColors[index],
         fill: false,
       })),
     };
+
+    const largestArray = this.datasets.reduce(
+      (largest, current) =>
+        current.length > largest.length ? current : largest,
+      []
+    );
+
+    let largestIndexInDatasets = null;
+
+    for (
+      let datasetIndex = 0;
+      datasetIndex < this.datasets.length;
+      datasetIndex++
+    ) {
+      const currentArray = this.datasets[datasetIndex];
+
+      if (Array.isArray(currentArray) && currentArray.length > 0) {
+        const currentLargestIntegerInDataset = Math.max(...currentArray);
+        largestIndexInDatasets =
+          largestIndexInDatasets === null
+            ? currentLargestIntegerInDataset
+            : Math.max(largestIndexInDatasets, currentLargestIntegerInDataset);
+      }
+    }
 
     this.chartInstance = new Chart(this.canvas.getContext("2d"), {
       type: this.mainChartType,
@@ -56,17 +82,25 @@ export class ChartGenerator {
               },
             },
           },
-          pan: {
-            enabled: true,
-            mode: "xy",
-          },
           zoom: {
+            limits: {
+              x: { min: 0, max: largestArray.length, minRange: 50 },
+              y: {
+                min: 0,
+                max: largestIndexInDatasets,
+                minRange: 50,
+              },
+            },
+            pan: {
+              enabled: true,
+              mode: "xy",
+            },
             zoom: {
               wheel: {
                 enabled: true,
               },
               pinch: {
-                enabled: true,
+                enabled: false,
               },
               mode: "xy",
             },
@@ -74,6 +108,7 @@ export class ChartGenerator {
         },
         scales: {
           x: {
+            type: this.xAxisType,
             beginAtZero: true,
             title: {
               display: true,
@@ -89,12 +124,12 @@ export class ChartGenerator {
             },
           },
           y: {
+            type: this.xAxisType,
             beginAtZero: true,
             title: {
               display: true,
               text: this.dataUnit,
             },
-            type: this.yAxisType,
           },
         },
       },
@@ -184,7 +219,9 @@ export class ChartGenerator {
         plugins: {
           title: {
             display: true,
-            text: `${this.dataUnit} för dag ${clickedDataPointIndex + 1}`,
+            text: `${this.dataUnit} för ${this.xAxisUnit} ${
+              clickedDataPointIndex + 1
+            }`,
           },
           tooltip: {
             callbacks: {
