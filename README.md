@@ -47,5 +47,4 @@ chartGenerator.generateChart();
 
 ## TODO
 
-- Migrate to Typescript
 - Add support for flowcharts, perhaps using Mermaid
