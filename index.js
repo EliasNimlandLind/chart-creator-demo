@@ -1,4 +1,4 @@
-import ChartGenerator from './lib/js/chart-creator/chartGenerator';
+import LineChartZoom from './lib/chart-creator/js/extendedCharts/lineChartZoom';
 
 const datasets = [
 	{
@@ -58,12 +58,13 @@ const datasets = [
 
 const chartContext = document.getElementById('line-chart');
 
-const chartGenerator = new ChartGenerator(
+const chartGenerator = new LineChartZoom(
 	chartContext,
 	'line',
 	'pie',
 	datasets,
-	'kr'
+	'SEK',
+	'Dag'
 );
 
 chartGenerator.generateChart();

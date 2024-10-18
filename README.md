@@ -28,19 +28,19 @@ Below is a basic sample to illustrate usage.
 
 ```javascript
 const datasets = [
-  {
-    label: "Dataset A",
-    data: [152, 181, 112],
-  },
+	{
+		label: 'Dataset A',
+		data: [152, 181, 112],
+	},
 ];
 
-const chartContext = document.getElementById("line-chart");
+const chartContext = document.getElementById('line-chart');
 const chartGenerator = new ChartGenerator(
-  chartContext,
-  "line",
-  "pie",
-  datasets,
-  "kr"
+	chartContext,
+	'line',
+	'pie',
+	datasets,
+	'kr'
 );
 chartGenerator.generateChart();
 ```
@@ -48,5 +48,4 @@ chartGenerator.generateChart();
 ## TODO
 
 - Migrate to Typescript
-- Seperate chartGenerator into smaller scripts
 - Add support for flowcharts, perhaps using Mermaid
