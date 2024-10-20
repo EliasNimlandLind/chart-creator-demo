@@ -1,0 +1,11 @@
+div {
+  position: relative;
+  width: 95wh;
+  height: 55vh;
+}
+canvas {
+  min-width: 1px;
+  min-height: 1px;
+  width: 1px;
+  height: 1px;
+}

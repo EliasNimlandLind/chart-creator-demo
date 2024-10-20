@@ -1,17 +1,22 @@
 {
-  "name": "chartjs-example",
-  "version": "1.0.0",
-  "license": "MIT",
-  "scripts": {
-    "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html"
-  },
-  "devDependencies": {
-    "parcel": "^2.6.2"
-  },
-  "dependencies": {
-    "@cubejs-client/core": "^0.31.0",
-    "chart.js": "^4.0.0",
-    "chartjs-plugin-zoom": "^2.0.1"
-  }
+	"name": "chart-creator",
+	"version": "1.0.0",
+	"author": "Elias Nimland Lind",
+	"license": "MIT",
+	"description": "A package used to create interactive charts and graphs.",
+	"main": "src/index.js",
+	"type": "module",
+	"dependencies": {
+		"chart.js": "^4.4.4",
+		"chartjs": "^0.3.24",
+		"chartjs-plugin-zoom": "^2.0.1"
+	},
+	"devDependencies": {
+		"vite": "^5.4.8"
+	},
+	"scripts": {
+		"build": "vite build",
+		"dev": "vite",
+		"preview": "vite preview"
+	}
 }
