@@ -1,6 +1,6 @@
-# chart-js-sample
+# chart creator
 
-## Features:
+## Features
 
 - Responsive
 - Made for the web
@@ -18,33 +18,10 @@ The project is used to visualize data using charts and graphs by instaniating ´
   - CSS
   - HTML
 - Development
-  - Vite
-  - Node.js
-    - chart.js
+  - [Vite](vitejs.dev)
+  - [Node.js](https://nodejs.org/en)
+    - [chart.js](https://www.chartjs.org/)
 
-## Usage guide
+## Where to find extensive and updated information
 
-Below is a basic sample to illustrate usage.
-
-```javascript
-const datasets = [
-	{
-		label: 'Dataset A',
-		data: [152, 181, 112],
-	},
-];
-
-const chartContext = document.getElementById('line-chart');
-const chartGenerator = new ChartGenerator(
-	chartContext,
-	'line',
-	'pie',
-	datasets,
-	'kr'
-);
-chartGenerator.generateChart();
-```
-
-## TODO
-
-- Add support for flowcharts, perhaps using Mermaid
+Extensive information in addition to code samples is found on the [wiki](https://github.com/EliasNimlandLind/chart-creator/wiki).
