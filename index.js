@@ -1,6 +1,6 @@
 import LineChartZoom from './lib/chart-creator/js/extendedCharts/lineChartZoom';
 
-const datasets = [
+const firstDatasets = [
 	{
 		label: 'Dataset A',
 		data: [
@@ -46,15 +46,58 @@ const datasets = [
 	},
 ];
 
-const chartContext = document.getElementById('line-chart');
+const firstChartContext = document.getElementById('first-line-chart');
 
-const chartGenerator = new LineChartZoom(
-	chartContext,
+const firstLineChartZoom = new LineChartZoom(
+	firstChartContext,
 	'line',
 	'pie',
-	datasets,
+	firstDatasets,
 	'SEK',
-	'Dag'
+	'Dag',
+	350,
+	400
+);
+/* firstLineChartZoom.generateChart();
+ */
+const updatingDatasets = [
+	{
+		label: 'Dataset A',
+		data: [],
+	},
+];
+
+const updatingChartContext = document.getElementById('second-line-chart');
+const updatingLineChartZoom = new LineChartZoom(
+	updatingChartContext,
+	'line',
+	'pie',
+	updatingDatasets,
+	'SEK',
+	'Dag',
+	1.2,
+	1.5
 );
 
-chartGenerator.generateChart();
+updatingLineChartZoom.generateChart();
+
+let index = 0;
+
+const zoomChart = () => {
+	updatingLineChartZoom.chartInstance.data.labels.push(index);
+
+	const randomInteger = Math.random() * 10;
+	let chartData = updatingLineChartZoom.chartInstance.data.datasets[0].data;
+
+	chartData.push(randomInteger);
+	index++;
+
+	if (chartData.length > 100) {
+		chartData.shift();
+		updatingLineChartZoom.chartInstance.data.labels.shift();
+	}
+
+	updatingLineChartZoom.chartInstance.update();
+};
+
+setInterval(zoomChart, 100);
