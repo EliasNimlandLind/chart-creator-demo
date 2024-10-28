@@ -1,5 +1,12 @@
+import { Chart } from 'chart.js/auto';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
 import LineChartZoom from './lib/chart-creator/js/extendedCharts/lineChartZoom';
 
+Chart.register(zoomPlugin, annotationPlugin);
+
+/* 
 const firstDatasets = [
 	{
 		label: 'Dataset A',
@@ -54,11 +61,11 @@ const firstLineChartZoom = new LineChartZoom(
 	'pie',
 	firstDatasets,
 	'SEK',
-	'Dag',
+	'Day',
 	350,
 	400
 );
-/* firstLineChartZoom.generateChart();
+firstLineChartZoom.generateChart();
  */
 const updatingDatasets = [
 	{
@@ -74,30 +81,20 @@ const updatingLineChartZoom = new LineChartZoom(
 	'pie',
 	updatingDatasets,
 	'SEK',
-	'Dag',
+	'Day',
 	1.2,
 	1.5
 );
 
 updatingLineChartZoom.generateChart();
 
-let index = 0;
-
-const zoomChart = () => {
-	updatingLineChartZoom.chartInstance.data.labels.push(index);
-
-	const randomInteger = Math.random() * 10;
-	let chartData = updatingLineChartZoom.chartInstance.data.datasets[0].data;
-
-	chartData.push(randomInteger);
-	index++;
-
-	if (chartData.length > 100) {
-		chartData.shift();
-		updatingLineChartZoom.chartInstance.data.labels.shift();
-	}
-
-	updatingLineChartZoom.chartInstance.update();
+const generateMockData = () => {
+	return Math.random() * 10;
 };
 
-setInterval(zoomChart, 100);
+const UpdateZoomChart = () => {
+	const mockData = generateMockData();
+	updatingLineChartZoom.lineChart.update(mockData);
+};
+
+setInterval(UpdateZoomChart, 100);
