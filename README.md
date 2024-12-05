@@ -7,7 +7,7 @@
 - Zoom and pan functionality
 - Customizable
 
-## About this project
+## Introduction
 
 The project is used to visualize data using charts and graphs by instaniating ´chartGenerator.js´ with configuration values such as chart type and unit. By clicking on a data point in the displayed chart a new chart containing data about the clicked data point.
 
